@@ -1,0 +1,37 @@
+#!/bin/sh
+set -x
+
+#fakechroot
+#fakeroot
+#env
+#echo PATH=$PATH
+
+if [ ! -f "/target/debootstrap/debootstrap" ]; then
+   debootstrap \
+       --arch armhf \
+       --foreign \
+       --components=main \
+       --keyring /host/raspberrypi.gpg \
+       stretch \
+       /target \
+       http://raspbian.raspberrypi.org/raspbian
+fi
+if [ ! -f /target/usr/bin/qemu-arm-static ]; then
+    cp $(which qemu-arm-static) /target/usr/bin/
+fi
+
+tarball=/host/stage1.tar.xz
+: > "$tarball"
+tar -c \
+    -J \
+    --anchored \
+    --exclude="./dev/*" \
+    --exclude="./proc/*" \
+    --exclude="./run/*" \
+    --exclude="./sys/*" \
+    -C /target \
+    -f "$tarball" \
+    .
+if [ -n "$PISYS_OWNER" ]; then
+    chown "$PISYS_OWNER" "$tarball"
+fi
