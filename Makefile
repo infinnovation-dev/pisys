@@ -21,6 +21,10 @@ base/prebase.tar.xz:	prebase.tar.xz
 stage0.built:	base.built \
 		raspberrypi.gpg.key locales.dc
 
+# Base for several Raspberry Pi systems
+pwmin.built:	stage0.built \
+		config.txt bashrc.sed console.dc
+
 # Generic rules
 %.tar.xz:	%.built
 	docker run \
