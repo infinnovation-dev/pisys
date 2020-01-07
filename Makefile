@@ -17,6 +17,10 @@ base/prebase.tar.xz:	prebase.tar.xz
 	mkdir -p base
 	ln $< $@
 
+# Create minimal usable system (pi-gen stage 0)
+stage0.built:	base.built \
+		raspberrypi.gpg.key locales.dc
+
 # Generic rules
 %.tar.xz:	%.built
 	docker run \
