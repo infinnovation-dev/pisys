@@ -1,0 +1,4 @@
+#!/bin/sh
+# Dummy mount command for use by debootstrap --second-stage
+echo "FAKEMOUNT $@" >&2
+exit 0

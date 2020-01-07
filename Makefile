@@ -18,6 +18,14 @@ base/stage1.tar.xz:	stage1.tar.xz
 	ln $< $@
 
 # Generic rules
+%.tar.xz:	%.built
+	docker run \
+	    "--env=PISYS_OWNER=$(shell id -u):$(shell id -g)" \
+	    -v "$(shell pwd):/host" \
+	    pisys-$*:latest \
+	    /host/export-tarball \
+	      "/host/$@"
+
 %.built:	%/Dockerfile
 	docker build -t pisys-$* $*
 	touch $@

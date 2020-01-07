@@ -1,0 +1,17 @@
+#!/bin/sh
+
+tarball=$1
+tar -c \
+    -f "$tarball" \
+    -J \
+    --anchored \
+    --exclude="./dev/*" \
+    --exclude="./proc/*" \
+    --exclude="./run/*" \
+    --exclude="./sys/*" \
+    --exclude="./host/*" \
+    -C / \
+    .
+if [ -n "$PISYS_OWNER" ]; then
+    chown "$PISYS_OWNER" "$tarball"
+fi
