@@ -6,14 +6,14 @@ all:	$(TARGETS:=.built)
 # First, create an environment which can run debootstrap
 bootstrap.built:
 
-# Second, use that to run debootstrap stage1, saving result filetree
-stage1.tar.xz:	bootstrap.built build-stage1 make-stage1
-	./build-stage1
+# Second, use that to run debootstrap first stage, saving result filetree
+prebase.tar.xz:	bootstrap.built build-prebase target-build-prebase
+	./build-prebase
 
 # Now, run debootstrap second stage under qemu
-base.built:	base/stage1.tar.xz
+base.built:	base/prebase.tar.xz
 
-base/stage1.tar.xz:	stage1.tar.xz
+base/prebase.tar.xz:	prebase.tar.xz
 	mkdir -p base
 	ln $< $@
 

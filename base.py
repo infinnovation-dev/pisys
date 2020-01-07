@@ -1,5 +1,5 @@
 def build(g, cfg):
-    g.from_tarball('stage1.tar.xz')
+    g.from_tarball('prebase.tar.xz')
     # debootstrap does not need to (and cannot in docker) mount /proc
     g.run('mv /bin/mount /bin/mount.orig')
     g.copy_file('fakemount','/bin/mount', mode='755')

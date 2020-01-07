@@ -7,6 +7,5 @@ docker run \
     "--env=http_proxy=$APT_PROXY" \
     "--env=PISYS_OWNER=$(id -u):$(id -g)" \
     -v "$pisys:/host" \
-    -v "$pisys/stage1:/target" \
     pisys-bootstrap:latest \
-    /host/make-stage1
+        /host/target-build-prebase prebase.tar.xz

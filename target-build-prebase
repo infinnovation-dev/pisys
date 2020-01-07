@@ -1,10 +1,5 @@
 #!/bin/sh
-set -x
-
-#fakechroot
-#fakeroot
-#env
-#echo PATH=$PATH
+tarball=$1
 
 if [ ! -f "/target/debootstrap/debootstrap" ]; then
    debootstrap \
@@ -20,8 +15,6 @@ if [ ! -f /target/usr/bin/qemu-arm-static ]; then
     cp $(which qemu-arm-static) /target/usr/bin/
 fi
 
-tarball=/host/stage1.tar.xz
-: > "$tarball"
 tar -c \
     -J \
     --anchored \
@@ -30,8 +23,8 @@ tar -c \
     --exclude="./run/*" \
     --exclude="./sys/*" \
     -C /target \
-    -f "$tarball" \
+    -f "/host/$tarball" \
     .
 if [ -n "$PISYS_OWNER" ]; then
-    chown "$PISYS_OWNER" "$tarball"
+    chown "$PISYS_OWNER" "/host/$tarball"
 fi
