@@ -1,17 +1,3 @@
 user:
   name: pi
   password: raspberry
-swap:
-  mode: dphys
-  size: 100M
-#wifi:
-#  ssid: ptwl
-#  psk: ...
-path:
-  sbin: true
-  # games: 
-resize:
-  size: full
-readonly: root-ro
-python:
-  version: python

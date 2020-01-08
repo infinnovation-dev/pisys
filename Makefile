@@ -1,5 +1,14 @@
-TARGETPY = $(filter-out iisysgen.py, $(wildcard *.py))
+TARGETPY = $(wildcard *.py)
 TARGETS = $(TARGETPY:.py=)
+
+ifeq ($(ACNG),localhost)
+# Need an external IP address to allow access from within docker
+APT_PROXY = http://$(shell hostname -I | sed -e 's/ .*//'):3142
+else
+ifneq ($(ACNG),)
+APT_PROXY = http://$(ACNG):3142
+endif
+endif
 
 all:	$(TARGETS:=.built)
 
@@ -15,13 +24,13 @@ base.built:	base/prebase.tar.xz
 
 base/prebase.tar.xz:	prebase.tar.xz
 	mkdir -p base
-	ln $< $@
+	rm -f $@ && ln $< $@
 
 # Create minimal usable system (pi-gen stage 0)
 stage0.built:	base.built \
 		raspberrypi.gpg.key locales.dc
 
-# Base for several Raspberry Pi systems
+# Common starting point for several Raspberry Pi systems
 pwmin.built:	stage0.built \
 		config.txt bashrc.sed console.dc
 
@@ -39,9 +48,17 @@ pwmin.built:	stage0.built \
 	touch $@
 
 %/Dockerfile:	%.py
-	PYTHONPATH=iisysgen python3 -m iisysgen build -c $*.yaml $*
+	PYTHONPATH=iisysgen python3 -m iisysgen build \
+	    $(addprefix -c ,$(wildcard $*.yaml) $(wildcard $*.json)) \
+	    -v APT_PROXY=$(APT_PROXY) \
+	    $*
 
-$(addsuffix /Dockerfile,$(TARGETS)):	%/Dockerfile:	%.yaml
+# Depend on any configuration files
+define cfg_template =
+$(1)/Dockerfile:	$(wildcard $(1).yaml) $(wildcard $(1).json)
+endef
+
+$(foreach t,$(TARGETS),$(eval $(call cfg_template,$(t))))
 
 $(addsuffix /Dockerfile,$(TARGETS)):	iisysgen/iisysgen.py
 
