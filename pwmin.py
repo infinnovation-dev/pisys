@@ -72,6 +72,11 @@ def build(g, cfg):
     # console & keyboard
     g.copy_as_helper('console.dc', 'console.dc')
     g.run('debconf-set-selections',stdin='/helpers/console.dc')
+    # groups for hardware (referenced by udev rule from raspberrypi-sys-mods)
+    hwgrps = ('spi','i2c','gpio')
+    for grp in hwgrps:
+        g.run(['groupadd','-f','--system', grp])
+    g.run(['usermod','--append','--groups', ','.join(hwgrps), username])
     # system
     g.install('sudo',
               'raspberrypi-sys-mods')
