@@ -50,8 +50,10 @@ def build(g, cfg):
     g.run('echo "%s:%s" | chpasswd' % (username, userpass))
     g.run('echo "root:root" | chpasswd')
     # hostname
-    g.append_lines('/var/local/hosts',
-                   '127.0.1.1	%s' % hostname)
+    g.write_lines('/var/local/hosts',
+                  # Written by netbase.postinst but clobbered by docker
+                  '127.0.0.1	localhost',
+                  '127.0.1.1	%s' % hostname)
     g.write_lines('/var/local/hostname', hostname)
     # network
     g.write_lines('/etc/modprobe.d/ipv6.conf',
