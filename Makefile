@@ -1,3 +1,9 @@
+#=======================================================================
+#	Typical usage:
+#	  make pwmin.tar.xz
+#=======================================================================
+IISYSGEN = PYTHONPATH=iisysgen python3 -m iisysgen.cmd
+
 TARGETPY = $(wildcard *.py)
 TARGETS = $(TARGETPY:.py=)
 
@@ -48,7 +54,7 @@ pwmin.built:	stage0.built \
 	touch $@
 
 %/Dockerfile:	%.py
-	PYTHONPATH=iisysgen python3 -m iisysgen build \
+	$(IISYSGEN) generate \
 	    $(addprefix -c ,$(wildcard $*.yaml) $(wildcard $*.json)) \
 	    -v APT_PROXY=$(APT_PROXY) \
 	    $*
@@ -60,6 +66,6 @@ endef
 
 $(foreach t,$(TARGETS),$(eval $(call cfg_template,$(t))))
 
-$(addsuffix /Dockerfile,$(TARGETS)):	iisysgen/iisysgen.py
+$(addsuffix /Dockerfile,$(TARGETS)):	iisysgen/iisysgen/*.py
 
 .PRECIOUS:	%/Dockerfile
